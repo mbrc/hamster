@@ -8,7 +8,7 @@ config = {
     'author': 'Marc',
     'url': 'https://github.com/mbrc/hamster',
     'version': '0.0.1',
-    'install_requires': ['nose'],
+    'install_requires': ['nose', 'sqlalchemy'],
     'packages': ['hamster'],
     'scripts': [],
     'name': 'Hamster'
