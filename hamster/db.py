@@ -1,10 +1,12 @@
+# TODO: Write a file comment.
+
 import os.path
-from sqlalchemy import create_engine
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import create_engine, Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
+DATABASE_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'hamster.db')
 
 
 class Artist(Base):
@@ -13,7 +15,7 @@ class Artist(Base):
     name = Column(String(250), nullable=False)
 
     def __repr__(self):
-        return "<Artist(name='%s')>" % (self.name)
+        return "<Artist(name='%s')>" % self.name
 
 
 class Album(Base):
@@ -39,28 +41,23 @@ class Song(Base):
         return "<Song(name='%s', album='%s')>" % (self.name, self.album)
 
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-engine = create_engine('sqlite:///' + os.path.join(basedir, 'hamster.db'))
+def create_schema():
+    engine = get_engine()
+    Base.metadata.create_all(engine)
 
-Base.metadata.create_all(engine)
+
+def get_engine():
+    db_path = 'sqlite:///' + DATABASE_PATH
+    return create_engine(db_path)
 
 
-# INSERT DUMMY DATA
-'''
-Session = sessionmaker(bind=engine)
-session = Session()
+def is_sqlite3(filename):
+    if not os.path.isfile(filename):
+        return False
+    if os.path.getsize(filename) < 100:
+        return False
 
-new_artist = Artist(name='Pantera')
-session.add(new_artist)
-session.commit()
+    with open(filename, 'rb') as fp:
+        header = fp.read(100)
 
-new_album = Album(name='Vulgar Display of Power', year='1992', artist=new_artist)
-session.add(new_album)
-session.commit()
-
-new_song = Song(name='Rise', album=new_album)
-session.add(new_song)
-session.commit()
-
-print(new_song)
-'''
+    return header[0:16] == b'SQLite format 3\000'
