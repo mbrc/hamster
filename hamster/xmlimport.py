@@ -19,7 +19,7 @@ class XMLImporter:
         for id, attributes in pl['Tracks'].items():
             # Only add songs to library. Podcasts and other types can be skipped.
             if attributes.get('Track Type') == 'File':
-                library.add_track(id, attributes)
+                library.add_song(attributes)
 
         return library
 
